@@ -1,4 +1,4 @@
-package de.devboost.eggempire.simulator.impl;
+package de.devboost.eggempire.simulator.players;
 
 import java.util.Set;
 
@@ -6,6 +6,10 @@ import de.devboost.eggempire.simulator.IEgg;
 import de.devboost.eggempire.simulator.IPlayer;
 import de.devboost.eggempire.simulator.ISimulator;
 
+/**
+ * Player that plays pessimistic until the number of remaining rounds gets below a given threshold.
+ *
+ */
 public class AggressivePlayer implements IPlayer {
 
 	@Override

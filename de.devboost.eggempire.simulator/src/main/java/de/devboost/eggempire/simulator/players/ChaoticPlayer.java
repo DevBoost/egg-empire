@@ -1,4 +1,4 @@
-package de.devboost.eggempire.simulator.impl;
+package de.devboost.eggempire.simulator.players;
 
 import java.util.Random;
 import java.util.Set;
