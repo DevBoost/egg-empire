@@ -104,7 +104,7 @@ public class SimulatorTest {
 		double pricePerExpectationEgg = pricePerSurpriseEgg * 2.5;
 		double maxPurchasePerRound = 10;
 		double probabilityForGoodSurpriseEgg = 0.6;
-		int boardSize = 30;
+		int boardSize = 18;
 		double featureInteractionDegree = 0.5;
 		int maxRounds = 1000;
 		return new Simulator(pricePerSurpriseEgg, pricePerExpectationEgg, maxPurchasePerRound,
