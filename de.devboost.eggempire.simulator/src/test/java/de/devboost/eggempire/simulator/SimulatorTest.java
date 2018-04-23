@@ -18,19 +18,21 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import de.devboost.eggempire.simulator.impl.AggressivePlayer;
-import de.devboost.eggempire.simulator.impl.ChaoticPlayer;
-import de.devboost.eggempire.simulator.impl.PessimisticPlayer;
-import de.devboost.eggempire.simulator.impl.RiskyPlayer;
 import de.devboost.eggempire.simulator.impl.Simulator;
-import de.devboost.eggempire.simulator.impl.StatisticalPlayer;
+import de.devboost.eggempire.simulator.players.AggressivePlayer;
+import de.devboost.eggempire.simulator.players.ChaoticPlayer;
+import de.devboost.eggempire.simulator.players.PessimisticPlayer;
+import de.devboost.eggempire.simulator.players.RiskyPlayer;
+import de.devboost.eggempire.simulator.players.StatisticalPlayer;
 
 @RunWith(Parameterized.class)
 public class SimulatorTest {
 
 	private static final int ITERATIONS = 20000;
-	
+
 	private static Map<String, List<Integer>> roundsPerPlayer = new LinkedHashMap<>();
+
+	private IPlayer player;
 
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
@@ -38,14 +40,30 @@ public class SimulatorTest {
 				{ new ChaoticPlayer() }, { new StatisticalPlayer() }, { new AggressivePlayer() } });
 	}
 
-	private IPlayer player;
-
 	public SimulatorTest(IPlayer player) {
 		this.player = player;
 	}
 
+
+	@Test
+	public void testPlayer() {
+		List<Integer> roundsNeeded = new ArrayList<>();
+		for (int i = 0; i < ITERATIONS; i++) {
+			ISimulator simulator = playWithPlayer(player);
+			roundsNeeded.add(simulator.getRound());
+		}
+
+		double averageRounds = getAvg(roundsNeeded);
+		int minRounds = getMin(roundsNeeded);
+		int maxRounds = getMax(roundsNeeded);
+		String playerName = player.getClass().getSimpleName();
+		System.out.println(playerName + " played round in AVG: " + averageRounds + "  | at MIN: " + minRounds + " | at MAX: "
+				+ maxRounds + "");
+		roundsPerPlayer.put(playerName, roundsNeeded);
+	}
+
 	@AfterClass
-	public static void calculateWhoWins() {
+	public static void calculateStatistics() {
 		System.out.println("\nPlayer comparision: ");
 		System.out.println("=================== ");
 		Set<String> keySet = roundsPerPlayer.keySet();
@@ -72,41 +90,23 @@ public class SimulatorTest {
 		List<String> sortedPlayers = new ArrayList<>(keySet);
 		Collections.sort(sortedPlayers);
 		for (String playerName : sortedPlayers) {
-			System.out.print(playerName + ",");
-		}
-		System.out.println();
-		for (String playerName : sortedPlayers) {
 			Integer games = gamesWon.get(playerName);
-			System.out.print((1.0d * games / ITERATIONS * 100 + "\t").replace(".", ","));
+			double winProbability = 1.0d * games / ITERATIONS * 100;
+			  double roundedProbability = Math.round(winProbability*100.0)/100.0;
+			String percentageWins = (roundedProbability + " %").replace(".", ",");
+			System.out.println(playerName + " won " + percentageWins +  "of games.");
 		}
-		System.out.println();
 	}
 
-	@Test
-	public void testPlayer() {
-		List<Integer> roundsNeeded = new ArrayList<>();
-		for (int i = 0; i < ITERATIONS; i++) {
-			ISimulator simulator = playWithPlayer(player);
-			roundsNeeded.add(simulator.getRound());
-		}
-
-		double averageRounds = getAvg(roundsNeeded);
-		int minRounds = getMin(roundsNeeded);
-		int maxRounds = getMax(roundsNeeded);
-		String playerName = player.getClass().getSimpleName();
-		System.out.println(playerName + " rounds played AVG: " + averageRounds + "  | MIN: " + minRounds + " | MAX: "
-				+ maxRounds + "");
-		roundsPerPlayer.put(playerName, roundsNeeded);
-	}
-
+	
 	private Simulator createSimulator() {
 		double pricePerSurpriseEgg = 2;
 		double pricePerExpectationEgg = pricePerSurpriseEgg * 2.5;
 		double maxPurchasePerRound = 10;
 		double probabilityForGoodSurpriseEgg = 0.6;
-		int boardSize = 18;
+		int boardSize = 30;
 		double featureInteractionDegree = 0.5;
-		int maxRounds = 100;
+		int maxRounds = 1000;
 		return new Simulator(pricePerSurpriseEgg, pricePerExpectationEgg, maxPurchasePerRound,
 				probabilityForGoodSurpriseEgg, boardSize, featureInteractionDegree, maxRounds);
 	}
