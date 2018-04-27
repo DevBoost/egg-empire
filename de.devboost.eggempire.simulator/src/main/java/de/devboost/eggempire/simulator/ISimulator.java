@@ -2,6 +2,8 @@ package de.devboost.eggempire.simulator;
 
 import java.util.Set;
 
+import de.devboost.eggempire.simulator.impl.SimulationState;
+
 public interface ISimulator {
 
 	Set<IEgg> buy(int surpriseEggs, int expectationEggs) throws IllegalArgumentException;
@@ -9,8 +11,6 @@ public interface ISimulator {
 	void putOnBoard(Set<IEgg> eggs);
 	
 	Set<IEgg> getBoard();
-	
-	boolean isFinished();
 	
 	int getRound();
 
@@ -21,4 +21,6 @@ public interface ISimulator {
 	double getMaxPurchasePerRound();
 
 	int getBoardSize();
+
+	SimulationState getSimulationState();
 }

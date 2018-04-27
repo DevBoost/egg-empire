@@ -18,7 +18,7 @@ public class ChaoticPlayer implements IPlayer {
 	@Override
 	public void play(ISimulator simulator) {
 
-		while (!simulator.isFinished()) {
+		while (!simulator.getSimulationState().isFinished()) {
 
 			double moneyLeft = simulator.getMaxPurchasePerRound();
 			double pricePerExpectationEgg = simulator.getPricePerExpectationEgg();

@@ -17,7 +17,7 @@ public class RiskyPlayer implements IPlayer {
 		double pricePerSurpriseEgg = simulator.getPricePerSurpriseEgg();
 		int surpriseEggsToPurchase = (int) (maxPurchasePerRound / pricePerSurpriseEgg);
 		
-		while (!simulator.isFinished()) {
+		while (!simulator.getSimulationState().isFinished()) {
 			Set<IEgg> eggs = simulator.buy(surpriseEggsToPurchase, 0);
 			simulator.putOnBoard(eggs);
 		}

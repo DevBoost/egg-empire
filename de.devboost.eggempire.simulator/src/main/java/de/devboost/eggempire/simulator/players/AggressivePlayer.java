@@ -23,8 +23,8 @@ public class AggressivePlayer implements IPlayer {
 		int maxExpectationEggs = (int) (maxPurchasePerRound / pricePerExpectationEgg);
 		int maxSupriseEggs = (int) (maxPurchasePerRound / pricePerSurpriseEgg);
 
-		while (!simulator.isFinished()) {
-			if (simulator.getRound() < 6) {
+		while (!simulator.getSimulationState().isFinished()) {
+			if (simulator.getRound() < 5) {
 				Set<IEgg> eggs = simulator.buy(0, maxExpectationEggs);
 				simulator.putOnBoard(eggs);
 			} else {

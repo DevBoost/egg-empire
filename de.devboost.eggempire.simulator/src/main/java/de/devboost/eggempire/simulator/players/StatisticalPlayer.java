@@ -19,7 +19,7 @@ public class StatisticalPlayer implements IPlayer {
 		int goodSupriseEggs = 0;
 		int badSupriseEggs = 0;
 
-		while (!simulator.isFinished()) {
+		while (!simulator.getSimulationState().isFinished()) {
 
 			// we determine the ratio of good surprise eggs by looking into the game history
 			// IMPROVEMENT: (if we would play against

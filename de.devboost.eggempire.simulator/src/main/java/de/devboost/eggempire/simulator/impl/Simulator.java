@@ -21,10 +21,12 @@ public class Simulator implements ISimulator {
 	private final int maxRounds;
 
 	private Set<IEgg> board = new LinkedHashSet<>();
+	private double budget;
 	private int round = 0;
-	
+
 	public Simulator(double pricePerSurpriseEgg, double pricePerExpectationEgg, double maxPurchasePerRound,
-			double probabilityForGoodSurpriseEgg, int boardSize, double featureInteractionDegree, int maxRounds) {
+			double probabilityForGoodSurpriseEgg, int boardSize, double featureInteractionDegree, int maxRounds,
+			double maxBudgetPerPlayer) {
 		this.pricePerSurpriseEgg = pricePerSurpriseEgg;
 		this.pricePerExpectationEgg = pricePerExpectationEgg;
 		this.maxPurchasePerRound = maxPurchasePerRound;
@@ -32,23 +34,26 @@ public class Simulator implements ISimulator {
 		this.boardSize = boardSize;
 		this.featureInteractionDegree = featureInteractionDegree;
 		this.maxRounds = maxRounds;
+		this.budget = maxBudgetPerPlayer;
 	}
 
 	@Override
 	public Set<IEgg> buy(int surpriseEggs, int expectationEggs) throws IllegalArgumentException {
 		double price = surpriseEggs * pricePerSurpriseEgg + expectationEggs * pricePerExpectationEgg;
 		if (price > maxPurchasePerRound) {
-			throw new IllegalArgumentException("Too many eggs purchased");
+			throw new IllegalArgumentException("Too many eggs purchased in round");
 		}
 
 		Set<IEgg> eggs = new LinkedHashSet<>();
+
 		for (int i = 0; i < surpriseEggs; i++) {
 			eggs.add(createSurpriseEgg());
 		}
 		for (int i = 0; i < expectationEggs; i++) {
 			eggs.add(new ExpectactionEgg());
 		}
-		
+
+		this.budget = budget - price;
 		endOfRound();
 		return eggs;
 	}
@@ -69,13 +74,13 @@ public class Simulator implements ISimulator {
 				surpriseEggsOnBoard.add(next);
 			}
 		}
-		
+
 		int eggsToReplace = (int) (surpriseEggsOnBoard.size() * featureInteractionDegree);
 		for (int i = 0; i < eggsToReplace && i < surpriseEggsOnBoard.size(); i++) {
 			board.remove(surpriseEggsOnBoard.get(i));
 			board.add(createSurpriseEgg());
 		}
-		
+
 		removeBrokenEggsFromBoard();
 	}
 
@@ -104,8 +109,20 @@ public class Simulator implements ISimulator {
 	}
 
 	@Override
-	public boolean isFinished() {
-		return board.size() >= boardSize || getRound() >= maxRounds;
+	public SimulationState getSimulationState() {
+		return new SimulationState(boardWasFilled(), maxRoundsReached(), outOfBudget(), getRound());
+	}
+
+	private boolean outOfBudget() {
+		return budget < 0;
+	}
+
+	private boolean maxRoundsReached() {
+		return getRound() >= maxRounds;
+	}
+
+	private boolean boardWasFilled() {
+		return board.size() >= boardSize;
 	}
 
 	@Override

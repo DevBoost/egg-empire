@@ -16,7 +16,7 @@ public class PessimisticPlayer implements IPlayer {
 		double maxPurchasePerRound = simulator.getMaxPurchasePerRound();
 		double pricePerExpectationEgg = simulator.getPricePerExpectationEgg();
 		int eggsToPurchase = (int) (maxPurchasePerRound / pricePerExpectationEgg);
-		while (!simulator.isFinished()) {
+		while (!simulator.getSimulationState().isFinished()) {
 			Set<IEgg> eggs = simulator.buy(0, eggsToPurchase);
 			simulator.putOnBoard(eggs);
 		}
